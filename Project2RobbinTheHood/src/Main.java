@@ -22,7 +22,7 @@ public class Main {
 //        strategies.add(new RandomStrategy());
           strategies.add(new BruteForceStrategy());
           strategies.add(new GreedyStrategy());
-//          strategies.add(new DPStrategy());
+          strategies.add(new DPStrategy());
 
         for (RobbingStrategy strategy : strategies) {
             testStrategy(strategy, graph);
@@ -42,19 +42,29 @@ public class Main {
     public static void collectTimingData() throws FileNotFoundException {
         RandomForestGenerator maker = new RandomForestGenerator(new Random());
 
-        System.out.println("       N  Time(s)");
-        RobbingStrategy strategy = null;
+        //TODO: change this to the appropriate strategy you want to collect timing data for!
+        //RobbingStrategy strategy = new RandomStrategy();
+        //RobbingStrategy strategy = new BruteForceStrategy();
+        //RobbingStrategy strategy = new GreedyStrategy();
+        RobbingStrategy strategy = new DPStrategy();
 
-        for (int N = 10; N <= 10000; N = N * 2) {
+        List<Integer> graphSizes = new ArrayList<>();
+        if (strategy instanceof BruteForceStrategy) {
+            // Limit brute-force timing to small graphs so experiments complete quickly
+            graphSizes.addAll(Arrays.asList(4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26));
+        } else {
+            for (int N = 1000; N <= 1048576; N = N * 2) {
+                graphSizes.add(N);
+            }
+        }
+
+        System.out.println("Collecting timing data for " + strategy.getClass().getSimpleName());
+        System.out.println("       N  Time(s)");
+
+        for (int N : graphSizes) {
             LabeledValueGraph graph = maker.makeRandomAcyclicGraph(N, 10, 0.99,
                     0.2, 0.2, 0.2);
 
-
-            //TODO: change this to the appropriate strategy you want to collect timing data for!
-            //strategy = new RandomStrategy();
-            strategy = new BruteForceStrategy();
-            //strategy = new GreedyStrategy();
-            //RobbingStrategy strategy = new DPStrategy();
 
             double timeSum  = 0.0;
             int NUM_TRIALS = 1;
